@@ -3,7 +3,9 @@
 
 void Skeleton::Initialize()
 {
-
+	boundingRectangle.setFillColor(sf::Color::Transparent);
+	boundingRectangle.setOutlineColor(sf::Color::Blue);
+	boundingRectangle.setOutlineThickness(1.0f);
 }
 
 void Skeleton::Load()
@@ -12,11 +14,14 @@ void Skeleton::Load()
 	{
 		std::cout << "spritesheet.png loaded successfully as Enemy's Texture." << std::endl;
 		sprite.setTexture(texture);
-		sprite.setPosition({ 400,100 });
+		sprite.setPosition({ 1600,700 });
 
 		int xIndex = 0, yIndex = 2;
-		sprite.setTextureRect(sf::IntRect({ 64 * xIndex,64 * yIndex }, { 64,64 }));
-		sprite.setScale({ 3,3 });
+		sprite.setTextureRect(sf::IntRect({ size.x * xIndex,size.y * yIndex }, size));
+		sprite.setScale(scale);
+
+		boundingRectangle.setSize(sf::Vector2f(size.x, size.y));
+		boundingRectangle.setScale(scale);
 	}
 	else
 	{
@@ -26,10 +31,11 @@ void Skeleton::Load()
 
 void Skeleton::Update()
 {
-
+	boundingRectangle.setPosition(sprite.getPosition());
 }
 
 void Skeleton::Draw(sf::RenderWindow& window)
 {
 	window.draw(sprite);
+	window.draw(boundingRectangle);
 }

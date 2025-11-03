@@ -3,6 +3,10 @@
 
 void Player::Initialize()
 {
+	boundingRectangle.setFillColor(sf::Color::Transparent);
+	boundingRectangle.setOutlineColor(sf::Color::Red);
+	boundingRectangle.setOutlineThickness(1.0f);
+
 }
 
 void Player::Load()
@@ -13,9 +17,12 @@ void Player::Load()
 		sprite.setTexture(texture);
 
 		int xIndex = 0, yIndex = 0;
-		sprite.setTextureRect(sf::IntRect({ 64 * xIndex,64 * yIndex }, { 64,64 }));
-		sprite.setScale({ 3,3 });
-		sprite.setPosition(1650, 800);
+		sprite.setTextureRect(sf::IntRect({ size.x * xIndex,size.y * yIndex }, size));
+		sprite.setScale(scale);
+
+		boundingRectangle.setSize(sf::Vector2f(size.x,size.y));
+		boundingRectangle.setScale(scale);
+		sprite.setPosition(0, 0);
 	}
 	else
 	{
@@ -51,6 +58,8 @@ void Player::Update(Skeleton& skeleton)
 		sprite.setPosition(currentPosition + sf::Vector2f(1, 0));
 	}
 
+	boundingRectangle.setPosition(sprite.getPosition());
+
 	// Bullets
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
@@ -67,10 +76,16 @@ void Player::Update(Skeleton& skeleton)
 		bulletDirection = Math::NormalizeVector(bulletDirection);
 		bullets[i].setPosition(bullets[i].getPosition() + bulletDirection * bulletSpeed);
 	}
+
+	if (Math::CheckBoolCollision(sprite.getGlobalBounds(), skeleton.sprite.getGlobalBounds()))
+	{
+		std::cout << "COLLISION" << std::endl;
+	}
 }
 void Player::Draw(sf::RenderWindow& window)
 {
 	window.draw(sprite);
+	window.draw(boundingRectangle);
 
 	for (int i = 0; i < bullets.size(); i++)
 	{
