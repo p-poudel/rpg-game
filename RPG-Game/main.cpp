@@ -1,5 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <vector>
+#include <math.h>
+
+sf::Vector2f NormalizeVector(sf::Vector2f vector)
+{
+	float m = std::sqrtf(vector.x * vector.x + vector.y * vector. y);
+	sf::Vector2f normalizedVector;
+	normalizedVector.x = vector.x / m;
+	normalizedVector.y = vector.y / m;
+
+	return normalizedVector;
+}
 
 int main()
 {
@@ -7,53 +19,53 @@ int main()
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
 	// creating a window
-	//sf::RenderWindow window(sf::VideoMode(sf::Vector2u(1336, 768)), "RPG Game");
-	sf::RenderWindow window(sf::VideoMode({800,600}), "RPG Game");
-
-	//// Circle
-	//sf::CircleShape shape(50.0f);
-
-	//shape.setFillColor(sf::Color::Red);
-	//shape.setOrigin(50.0f,50.0f);
-	//shape.setPosition(sf::Vector2f(400,300));
-	//shape.setOutlineColor(sf::Color::Blue);
-	//shape.setOutlineThickness(8.0f);
-
-	//// Rectangle
-	//sf::RectangleShape box({ 100,50 });
-	//box.setOrigin(box.getSize() / 2.0f);
-	//box.setFillColor(sf::Color::Yellow);
-	//box.setPosition(sf::Vector2f(500, 100));
-	//box.setOutlineColor(sf::Color::Cyan);
-	//box.setOutlineThickness(8.0f);
-	//box.setRotation(45);
-
-	//// Trinagles?
-	//sf::CircleShape triangle(100.f, 3);
-	//triangle.setFillColor(sf::Color::Green);
+	sf::RenderWindow window(sf::VideoMode({1920,1080}), "RPG Game", sf::Style::Default, settings);
 	
 	// -------------------------------------INITIALIZE-------------------------------------
-
+	std::vector<sf::RectangleShape> bullets;
+	float bulletSpeed = 0.5f;
+	
 	// -------------------------------------LOAD-------------------------------------
-	sf::Texture playerTexture;
-	sf::Sprite playerSprite;
+	sf::Texture playerTexture, skeletonTexture;
+	sf::Sprite playerSprite, skeletonSprite;
 
+	// -------------------------------------PLAYER-------------------------------------
 	if (playerTexture.loadFromFile("assets/player/textures/spritesheet.png"))
 	{
-		std::cout << "player.png loaded successfully as a Texture." << std::endl;
+		std::cout << "spritesheet.png loaded successfully as Player's Texture." << std::endl;
 		playerSprite.setTexture(playerTexture);
 
 		int xIndex = 0, yIndex = 0;
 		playerSprite.setTextureRect(sf::IntRect({ 64 * xIndex,64 * yIndex }, { 64,64 }));
 		playerSprite.setScale({ 3,3 });
+		playerSprite.setPosition(1650,800);
 	}
 	else
 	{
-		std::cout << "player.png failed to load as a Texture." << std::endl;
+		std::cout << "spritesheet.png failed to load as Player's Texture." << std::endl;
 	}
+	// -------------------------------------PLAYER-------------------------------------
+
+	// -------------------------------------SKELETON-------------------------------------
+	if (skeletonTexture.loadFromFile("assets/player/textures/spritesheet.png"))
+	{
+		std::cout << "spritesheet.png loaded successfully as Enemy's Texture." << std::endl;
+		skeletonSprite.setTexture(skeletonTexture);
+		skeletonSprite.setPosition({400,100});
+
+		int xIndex = 0, yIndex = 2;
+		skeletonSprite.setTextureRect(sf::IntRect({ 64 * xIndex,64 * yIndex }, { 64,64 }));
+		skeletonSprite.setScale({ 3,3 });
+	}
+	else
+	{
+		std::cout << "spritesheet.png failed to load as Enemy's Texture." << std::endl;
+	}
+	// -------------------------------------SKELETON-------------------------------------
 	// -------------------------------------LOAD-------------------------------------
 	
 	//while the window is open, execute the code in body of loop
+	// main game loop
 	while (window.isOpen())
 	{
 		// -------------------------------------UPDATE-------------------------------------
@@ -64,16 +76,10 @@ int main()
 			{
 					window.close();
 			}
-
-			/*if (event.type == sf::Event::KeyPressed)
-			{
-				if (event.key.code == sf::Keyboard::D)
-				{
-					playerSprite.setPosition(playerSprite.getPosition() + sf::Vector2f(10, 0));
-					// polling rate is too slow for event
-				}
-			}*/
 		}
+
+		//bullet.setPosition(bullet.getPosition() + bulletDirection * bulletSpeed);
+
 		sf::Vector2f currentPosition = playerSprite.getPosition();
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
@@ -91,15 +97,34 @@ int main()
 		{
 			playerSprite.setPosition(currentPosition + sf::Vector2f(1, 0));
 		}
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			bullets.push_back(sf::RectangleShape(sf::Vector2f(10, 5)));
+			int i = bullets.size() - 1;
+			bullets[i].setPosition(playerSprite.getPosition());
+
+
+		}
+
+		for (int i = 0; i < bullets.size(); i++)
+		{
+			sf::Vector2f bulletDirection = skeletonSprite.getPosition() - bullets[i].getPosition();
+			bulletDirection = NormalizeVector(bulletDirection);
+			bullets[i].setPosition(bullets[i].getPosition() + bulletDirection * bulletSpeed);
+		}
 		// -------------------------------------UPDATE-------------------------------------
 
 		// -------------------------------------DRAW-------------------------------------
 
 		window.clear(sf::Color::Black);
-		/*window.draw(shape);
-		window.draw(box);
-		window.draw(triangle);*/
+		window.draw(skeletonSprite);
 		window.draw(playerSprite);
+		
+		for (int i = 0; i < bullets.size(); i++)
+		{
+			window.draw(bullets[i]);
+		}
 		window.display();
 
 		// -------------------------------------DRAW-------------------------------------
