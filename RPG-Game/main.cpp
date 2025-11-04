@@ -11,7 +11,8 @@ int main()
 	settings.antialiasingLevel = 8;
 	// creating a window
 	sf::RenderWindow window(sf::VideoMode({1920,1080}), "RPG Game", sf::Style::Default, settings);
-	
+	//window.setVerticalSyncEnabled(true); //enable v-sync
+	window.setFramerateLimit(240);
 	// -------------------------------------INITIALIZE-------------------------------------
 	
 	
@@ -26,6 +27,7 @@ int main()
 	skeleton.Load();
 	// -------------------------------------LOAD-------------------------------------
 	
+	sf::Clock clock;
 	//while the window is open, execute the code in body of loop
 	// main game loop
 	while (window.isOpen())
@@ -40,8 +42,10 @@ int main()
 			}
 		}
 
-		skeleton.Update();
-		player.Update(skeleton);
+		sf::Time deltaTimeTimer = clock.restart();
+		float deltaTime = deltaTimeTimer.asMilliseconds();
+		skeleton.Update(deltaTime);
+		player.Update(skeleton, deltaTime);
 
 		
 		// -------------------------------------UPDATE-------------------------------------

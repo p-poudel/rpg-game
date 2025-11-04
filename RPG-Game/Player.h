@@ -10,6 +10,7 @@ private:
 
 	std::vector<sf::RectangleShape> bullets;
 	float bulletSpeed = 0.5f;
+	float speed = 1.0f;
 
 	sf::RectangleShape boundingRectangle;
 
@@ -24,6 +25,6 @@ public:
 
 	void Shoot();
 	void ReduceHp();
-	void Update(Skeleton& skeleton);
+	void Update(Skeleton& skeleton, float deltaTime);
 	void Draw(sf::RenderWindow& window);
 };

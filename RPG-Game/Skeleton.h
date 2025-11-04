@@ -18,7 +18,7 @@ public:
 
 	void Shoot();
 	void ReduceHp();
-	void Update();
+	void Update(float deltaTime);
 	void Draw(sf::RenderWindow& window);
 };
 
