@@ -2,6 +2,7 @@
 
 #include "Player.h"
 #include "Skeleton.h"
+#include "FrameRate.h"
 
 
 int main()
@@ -14,24 +15,27 @@ int main()
 	//window.setVerticalSyncEnabled(true); //enable v-sync
 	window.setFramerateLimit(240);
 	// -------------------------------------INITIALIZE-------------------------------------
-	
-	
+	FrameRate frameRate;
 	Player player;
 	Skeleton skeleton;
 
+	frameRate.Initialize();
 	player.Initialize();
 	skeleton.Initialize();
 
 	// -------------------------------------LOAD-------------------------------------
+	frameRate.Load();
 	player.Load();
 	skeleton.Load();
 	// -------------------------------------LOAD-------------------------------------
 	
 	sf::Clock clock;
+	sf::Time deltaTimeTimer;
 	//while the window is open, execute the code in body of loop
 	// main game loop
 	while (window.isOpen())
 	{
+		clock.restart();
 		// -------------------------------------UPDATE-------------------------------------
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -42,8 +46,11 @@ int main()
 			}
 		}
 
-		sf::Time deltaTimeTimer = clock.restart();
-		float deltaTime = deltaTimeTimer.asMilliseconds();
+		double deltaTime = deltaTimeTimer.asMicroseconds() / 1000;
+		
+		//std::cout << std::endl;
+
+		frameRate.Update(deltaTime);
 		skeleton.Update(deltaTime);
 		player.Update(skeleton, deltaTime);
 
@@ -56,10 +63,9 @@ int main()
 
 		skeleton.Draw(window);
 		player.Draw(window);
-		
-		
+		frameRate.Draw(window);
 		window.display();
-
+		deltaTimeTimer = clock.getElapsedTime();
 		// -------------------------------------DRAW-------------------------------------
 	}
 	return 0;

@@ -9,8 +9,8 @@ private:
 	sf::Texture texture;
 
 	std::vector<sf::RectangleShape> bullets;
-	float bulletSpeed = 0.5f;
-	float speed = 1.0f;
+	float bulletSpeed;
+	float speed;
 
 	sf::RectangleShape boundingRectangle;
 
@@ -20,6 +20,8 @@ private:
 public:
 	sf::Sprite sprite;
 public:
+	Player();
+	~Player();
 	void Initialize();
 	void Load();
 
